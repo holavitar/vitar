@@ -1,0 +1,55 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-bg: #f2f2f2;
+  --color-primary: #11325b;
+  --color-secondary: #e7ba61;
+  --color-accent: #ac1c37;
+
+  /* 
+    Títulos: Helvetica Now (comercial) → fallback a Inter (Google Fonts) → Helvetica Neue → Helvetica 
+    Body: Verdana nativo → Geneva → system sans-serif 
+  */
+  --font-display: "Helvetica Now Display", "Helvetica Now", Inter, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-body: Verdana, Geneva, "DejaVu Sans", sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: #111;
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+}
+
+/* Scroll offset for fixed navbar */
+section[id] {
+  scroll-margin-top: 72px;
+}
+
+/* Focus ring */
+*:focus-visible {
+  outline: 2px solid var(--color-secondary);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Thin scrollbar */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: #f2f2f2; }
+::-webkit-scrollbar-thumb { background: #11325b40; border-radius: 999px; }
+::-webkit-scrollbar-thumb:hover { background: #11325b80; }
