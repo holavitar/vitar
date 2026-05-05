@@ -171,7 +171,7 @@ export default function Seguridad() {
             </div>
 
             <div className="mt-6">
-              
+              <a
                 href="#demo"
                 className="inline-block bg-[#e7ba61] hover:bg-[#d4a94f] text-[#11325b] font-bold px-7 py-3.5 rounded-lg text-sm transition-all duration-200"
               >
