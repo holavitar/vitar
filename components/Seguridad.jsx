@@ -28,7 +28,7 @@ export default function Seguridad() {
                 {
                   icon: "🔐",
                   title: "Encriptación TLS + AES",
-                  detail: "Datos cifrados en tránsito y en reposo. Estándar bancario.",
+                  detail: "Datos cifrados en tránsito y en reposo.",
                 },
                 {
                   icon: "👥",
