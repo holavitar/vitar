@@ -38,26 +38,26 @@ const LAYERS = [
   {
     label: "Capa de acceso",
     sub: "Autenticación multifactor · RBAC · Sesiones con expiración",
-    color: "bg-slate-100 border-slate-200",
+    color: "bg-[#11325b]/5 border-[#11325b]/20",
     text: "text-[#11325b]",
   },
   {
     label: "Capa de transporte",
     sub: "TLS 1.3 en tránsito · HTTPS obligatorio",
-    color: "bg-teal-50 border-teal-200",
-    text: "text-teal-900",
+    color: "bg-[#e7ba61]/10 border-[#e7ba61]/30",
+    text: "text-[#11325b]",
   },
   {
     label: "Capa de interoperabilidad",
     sub: "HL7 FHIR R4 · SURHCE · ReNadPDiS",
-    color: "bg-violet-50 border-violet-200",
-    text: "text-violet-900",
+    color: "bg-[#ac1c37]/10 border-[#ac1c37]/30",
+    text: "text-[#11325b]",
   },
   {
     label: "Capa de almacenamiento",
     sub: "AES-256 en reposo · Auditoría de accesos",
-    color: "bg-amber-50 border-amber-200",
-    text: "text-amber-900",
+    color: "bg-[#e7ba61]/15 border-[#e7ba61]/40",
+    text: "text-[#11325b]",
   },
 ];
 
@@ -89,7 +89,7 @@ export default function Seguridad() {
             Seguridad desde el diseño, no como agregado
           </h2>
           <p
-            className="text-gray-500 max-w-xl leading-relaxed"
+            className="text-[#11325b]/60 max-w-xl leading-relaxed"
             style={{ fontFamily: "Verdana, Geneva, sans-serif", fontSize: "13px" }}
           >
             Los datos clínicos de tus pacientes están protegidos en cada capa de la arquitectura.
@@ -105,7 +105,7 @@ export default function Seguridad() {
               <button
                 key={item.title}
                 onClick={() => setActive(active === i ? null : i)}
-                className="w-full text-left flex gap-4 items-start bg-white rounded-xl p-5 border border-gray-100 shadow-sm hover:border-[#11325b]/20 hover:shadow-md transition-all duration-200"
+                className="w-full text-left flex gap-4 items-start bg-[#f2f2f2] rounded-xl p-5 border border-[#11325b]/10 shadow-sm hover:border-[#11325b]/20 hover:shadow-md transition-all duration-200"
               >
                 <div className="w-9 h-9 rounded-lg bg-[#11325b]/6 flex items-center justify-center text-lg flex-shrink-0">
                   {item.icon}
@@ -121,7 +121,7 @@ export default function Seguridad() {
                   </div>
                   {active === i && (
                     <div
-                      className="text-gray-500 mt-1.5"
+                      className="text-[#11325b]/60 mt-1.5"
                       style={{ fontFamily: "Verdana, Geneva, sans-serif", fontSize: "12px" }}
                     >
                       {item.detail}
@@ -152,7 +152,7 @@ export default function Seguridad() {
                     className={`rounded-lg border px-4 py-3 ${layer.color}`}
                   >
                     <div className={`text-xs font-bold ${layer.text}`}>{layer.label}</div>
-                    <div className="text-gray-500 mt-0.5" style={{ fontSize: "10px" }}>
+                    <div className="text-[#11325b]/60 mt-0.5" style={{ fontSize: "10px" }}>
                       {layer.sub}
                     </div>
                   </div>
@@ -186,10 +186,10 @@ export default function Seguridad() {
           {NORMS.map((n) => (
             <div
               key={n.label}
-              className="bg-white rounded-xl border border-gray-100 px-4 py-3 text-center shadow-sm"
+              className="bg-[#f2f2f2] rounded-xl border border-[#11325b]/10 px-4 py-3 text-center shadow-sm"
             >
               <div className="text-[#11325b] font-bold text-xs">{n.label}</div>
-              <div className="text-gray-400 mt-0.5" style={{ fontSize: "10px" }}>{n.desc}</div>
+              <div className="text-[#11325b]/50 mt-0.5" style={{ fontSize: "10px" }}>{n.desc}</div>
             </div>
           ))}
         </div>
