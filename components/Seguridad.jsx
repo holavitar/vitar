@@ -38,26 +38,22 @@ const LAYERS = [
   {
     label: "Capa de acceso",
     sub: "Autenticación multifactor · RBAC · Sesiones con expiración",
-    color: "bg-[#11325b]/5 border-[#11325b]/20",
-    text: "text-[#11325b]",
+    color: "bg-white/10 border-white/20",
   },
   {
     label: "Capa de transporte",
     sub: "TLS 1.3 en tránsito · HTTPS obligatorio",
-    color: "bg-[#e7ba61]/10 border-[#e7ba61]/30",
-    text: "text-[#11325b]",
+    color: "bg-[#e7ba61]/15 border-[#e7ba61]/30",
   },
   {
     label: "Capa de interoperabilidad",
     sub: "HL7 FHIR R4 · SURHCE · ReNadPDiS",
-    color: "bg-[#ac1c37]/10 border-[#ac1c37]/30",
-    text: "text-[#11325b]",
+    color: "bg-white/6 border-white/12",
   },
   {
     label: "Capa de almacenamiento",
     sub: "AES-256 en reposo · Auditoría de accesos",
-    color: "bg-[#e7ba61]/15 border-[#e7ba61]/40",
-    text: "text-[#11325b]",
+    color: "bg-[#e7ba61]/10 border-[#e7ba61]/20",
   },
 ];
 
@@ -99,13 +95,13 @@ export default function Seguridad() {
 
         <div className="grid lg:grid-cols-2 gap-10 items-start">
 
-          {/* LEFT — checklist normativo */}
+          {/* LEFT — checklist normativo interactivo */}
           <div className="space-y-3">
             {ITEMS.map((item, i) => (
               <button
                 key={item.title}
                 onClick={() => setActive(active === i ? null : i)}
-                className="w-full text-left flex gap-4 items-start bg-[#f2f2f2] rounded-xl p-5 border border-[#11325b]/10 shadow-sm hover:border-[#11325b]/20 hover:shadow-md transition-all duration-200"
+                className="w-full text-left flex gap-4 items-start bg-white rounded-xl p-5 border border-gray-100 shadow-sm hover:border-[#11325b]/20 hover:shadow-md transition-all duration-200"
               >
                 <div className="w-9 h-9 rounded-lg bg-[#11325b]/6 flex items-center justify-center text-lg flex-shrink-0">
                   {item.icon}
@@ -113,15 +109,24 @@ export default function Seguridad() {
                 <div className="flex-1">
                   <div className="flex items-center justify-between gap-2">
                     <div className="font-semibold text-[#11325b] text-sm">{item.title}</div>
-                    {item.law && (
-                      <span className="text-[10px] font-semibold text-[#11325b]/60 border border-[#11325b]/15 rounded-full px-2 py-0.5 flex-shrink-0">
-                        {item.law}
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                      {item.law && (
+                        <span className="text-[10px] font-semibold text-[#11325b]/60 border border-[#11325b]/15 rounded-full px-2 py-0.5">
+                          {item.law}
+                        </span>
+                      )}
+                      <span
+                        className={`text-[#11325b]/40 text-xs transition-transform duration-200 ${
+                          active === i ? "rotate-180" : ""
+                        }`}
+                      >
+                        ▾
                       </span>
-                    )}
+                    </div>
                   </div>
                   {active === i && (
                     <div
-                      className="text-[#11325b]/60 mt-1.5"
+                      className="text-gray-500 mt-2 leading-relaxed"
                       style={{ fontFamily: "Verdana, Geneva, sans-serif", fontSize: "12px" }}
                     >
                       {item.detail}
@@ -132,27 +137,27 @@ export default function Seguridad() {
             ))}
           </div>
 
-          {/* RIGHT — diagrama de arquitectura */}
+          {/* RIGHT — arquitectura de capas */}
           <div className="bg-[#11325b] rounded-2xl p-8">
-            <div className="text-[#e7ba61] text-xs font-semibold uppercase tracking-widest mb-5">
+            <div className="text-[#e7ba61] text-xs font-semibold uppercase tracking-widest mb-2">
               Arquitectura de seguridad
             </div>
             <p
-              className="text-white/50 mb-6"
+              className="text-white/45 mb-7"
               style={{ fontFamily: "Verdana, Geneva, sans-serif", fontSize: "11px" }}
             >
               Protección en cuatro capas independientes. Un fallo en una capa no compromete las demás.
             </p>
 
-            {/* Layers */}
             <div className="space-y-2">
               {LAYERS.map((layer, i) => (
                 <div key={layer.label}>
-                  <div
-                    className={`rounded-lg border px-4 py-3 ${layer.color}`}
-                  >
-                    <div className={`text-xs font-bold ${layer.text}`}>{layer.label}</div>
-                    <div className="text-[#11325b]/60 mt-0.5" style={{ fontSize: "10px" }}>
+                  <div className={`rounded-xl border px-5 py-3.5 ${layer.color}`}>
+                    <div className="text-white font-bold text-xs mb-0.5">{layer.label}</div>
+                    <div
+                      className="text-white/50"
+                      style={{ fontSize: "10px", fontFamily: "Verdana, Geneva, sans-serif" }}
+                    >
                       {layer.sub}
                     </div>
                   </div>
@@ -163,14 +168,16 @@ export default function Seguridad() {
               ))}
             </div>
 
-            {/* Firma digital footer */}
-            <div className="mt-5 pt-4 border-t border-white/10">
-              <div className="text-white/40 text-center" style={{ fontSize: "10px" }}>
+            <div className="mt-6 pt-5 border-t border-white/10">
+              <div
+                className="text-white/35 text-center"
+                style={{ fontSize: "10px", fontFamily: "Verdana, Geneva, sans-serif" }}
+              >
                 Firma digital válida · Ley 25.506 · Consentimiento informado · Art. 13, Ley 26.529
               </div>
             </div>
 
-            <div className="mt-6">
+            <div className="mt-7">
               <a
                 href="#demo"
                 className="inline-block bg-[#e7ba61] hover:bg-[#d4a94f] text-[#11325b] font-bold px-7 py-3.5 rounded-lg text-sm transition-all duration-200"
@@ -181,15 +188,20 @@ export default function Seguridad() {
           </div>
         </div>
 
-        {/* Barra normativa — visible para tomadores de decisión institucional */}
-        <div className="mt-10 grid grid-cols-2 sm:grid-cols-5 gap-3">
+        {/* Barra normativa */}
+        <div className="mt-8 grid grid-cols-2 sm:grid-cols-5 gap-3">
           {NORMS.map((n) => (
             <div
               key={n.label}
-              className="bg-[#f2f2f2] rounded-xl border border-[#11325b]/10 px-4 py-3 text-center shadow-sm"
+              className="bg-white rounded-xl border border-gray-100 shadow-sm px-4 py-3 text-center"
             >
               <div className="text-[#11325b] font-bold text-xs">{n.label}</div>
-              <div className="text-[#11325b]/50 mt-0.5" style={{ fontSize: "10px" }}>{n.desc}</div>
+              <div
+                className="text-[#11325b]/45 mt-0.5"
+                style={{ fontSize: "10px", fontFamily: "Verdana, Geneva, sans-serif" }}
+              >
+                {n.desc}
+              </div>
             </div>
           ))}
         </div>
