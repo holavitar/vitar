@@ -12,13 +12,17 @@ export default async function PatientLayout({
 
   if (!user) redirect("/login");
 
-  const { data: profile } = await supabase
+  const { data } = await supabase
     .from("users")
     .select("role")
     .eq("id", user.id)
     .single();
 
-  if (profile?.role !== "patient") redirect("/dashboard");
+  const role = (data as { role?: string } | null)?.role;
+
+  if (role !== "patient") {
+    redirect("/dashboard");
+  }
 
   return (
     <div className="flex min-h-screen bg-[#f2f2f2]">
