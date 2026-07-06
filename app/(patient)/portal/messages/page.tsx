@@ -38,7 +38,7 @@ export default async function PatientMessagesPage() {
 
       <main className="flex-1 flex flex-col overflow-hidden p-6">
         <div className="flex-1 bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden flex flex-col">
-          {instUser ? (
+          {instUser?.id ? (
             <ChatWindow
               currentUserId={user.id}
               currentUserName={patient.name}
