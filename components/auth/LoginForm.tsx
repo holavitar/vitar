@@ -44,13 +44,15 @@ export function LoginForm() {
     }
 
     // Obtener rol del usuario
-    const { data: profile } = await supabase
+    const { data: profileData } = await supabase
       .from("users")
       .select("role")
       .eq("id", authData.user.id)
       .single();
 
-    if (profile?.role === "patient") {
+    const role = (profileData as { role?: string } | null)?.role;
+
+    if (role === "patient") {
       router.push("/portal");
     } else {
       router.push("/dashboard");
