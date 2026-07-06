@@ -22,18 +22,25 @@ export default async function MessagesPage({ searchParams }: PageProps) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  const { data: profile } = await supabase
+  const { data } = await supabase
     .from("users")
     .select("institution_id, name")
     .eq("id", user.id)
     .single();
 
-  if (!profile?.institution_id) redirect("/login");
+  const profile = data as {
+    institution_id?: string;
+    name?: string | null;
+  } | null;
+
+  const institutionId = profile?.institution_id;
+
+  if (!institutionId) redirect("/login");
 
   const { patient: selectedPatientId } = await searchParams;
 
   const [contacts, messages] = await Promise.all([
-    getPatientContacts(profile.institution_id),
+    getPatientContacts(institutionId),
     selectedPatientId
       ? getConversation(user.id, selectedPatientId)
       : Promise.resolve([]),
@@ -63,20 +70,18 @@ export default async function MessagesPage({ searchParams }: PageProps) {
             />
           ) : (
             <div className="flex-1 flex items-center justify-center bg-[#f2f2f2]">
-              <div className="text-center">
-                <div className="w-14 h-14 rounded-2xl bg-[#11325b]/8 flex items-center justify-center mx-auto mb-4">
-                  <MessageSquare size={24} className="text-[#11325b]/40" />
-                </div>
-                <p className="font-semibold text-[#11325b] text-sm mb-1">
-                  Seleccioná un paciente
-                </p>
-                <p
-                  className="text-gray-400 text-xs max-w-xs"
-                  style={{ fontFamily: "Verdana, Geneva, sans-serif" }}
-                >
-                  Elegí un contacto de la lista para iniciar o continuar una conversación.
-                </p>
+              <div className="w-14 h-14 rounded-2xl bg-[#11325b]/8 flex items-center justify-center mx-auto mb-4">
+                <MessageSquare size={24} className="text-[#11325b]/40" />
               </div>
+              <p className="font-semibold text-[#11325b] text-sm mb-1">
+                Seleccioná un paciente
+              </p>
+              <p
+                className="text-gray-400 text-xs max-w-xs"
+                style={{ fontFamily: "Verdana, Geneva, sans-serif" }}
+              >
+                Elegí un contacto de la lista para iniciar o continuar una conversación.
+              </p>
             </div>
           )}
         </div>

@@ -36,17 +36,19 @@ export default async function PatientsPage({ searchParams }: PageProps) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  const { data: profile } = await supabase
+  const { data } = await supabase
     .from("users")
     .select("institution_id")
     .eq("id", user.id)
     .single();
 
-  if (!profile?.institution_id) redirect("/login");
+  const institutionId = (data as { institution_id?: string } | null)?.institution_id;
+
+  if (!institutionId) redirect("/login");
 
   const { q = "", risk = "" } = await searchParams;
 
-  const allPatients = await getPatients(profile.institution_id);
+  const allPatients = await getPatients(institutionId);
   const filtered = filterPatients(allPatients, q, risk);
 
   return (

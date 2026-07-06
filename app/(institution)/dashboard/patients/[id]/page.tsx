@@ -24,15 +24,17 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return { title: "Paciente" };
 
-  const { data: profile } = await supabase
+  const { data } = await supabase
     .from("users")
     .select("institution_id")
     .eq("id", user.id)
     .single();
 
-  if (!profile?.institution_id) return { title: "Paciente" };
+  const institutionId = (data as { institution_id?: string } | null)?.institution_id;
 
-  const patient = await getPatientById(id, profile.institution_id);
+  if (!institutionId) return { title: "Paciente" };
+
+  const patient = await getPatientById(id, institutionId);
   return { title: patient?.name ?? "Paciente" };
 }
 
@@ -43,16 +45,18 @@ export default async function PatientDetailPage({ params }: PageProps) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  const { data: profile } = await supabase
+  const { data } = await supabase
     .from("users")
     .select("institution_id")
     .eq("id", user.id)
     .single();
 
-  if (!profile?.institution_id) redirect("/login");
+  const institutionId = (data as { institution_id?: string } | null)?.institution_id;
+
+  if (!institutionId) redirect("/login");
 
   const [patient, medications, symptoms, logs] = await Promise.all([
-    getPatientById(id, profile.institution_id),
+    getPatientById(id, institutionId),
     getPatientMedications(id),
     getPatientSymptoms(id),
     getAdherenceLogs(id),

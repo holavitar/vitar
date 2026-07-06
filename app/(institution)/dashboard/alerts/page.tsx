@@ -19,23 +19,20 @@ export default async function AlertsPage({ searchParams }: PageProps) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  const { data } = await supabase
-    .from("users")
-    .select("role")
-    .eq("id", user.id)
-    .single();
-
-  const role = (data as any)?.role as string | undefined;
-
-  if (role !== "institution") redirect("/portal");
-
   const { data: userData } = await supabase
     .from("users")
-    .select("institution_id")
+    .select("role, institution_id")
     .eq("id", user.id)
     .single();
 
-  const institutionId = (userData as any)?.institution_id as string | undefined;
+  const profile = userData as {
+    role?: string;
+    institution_id?: string;
+  } | null;
+
+  if (profile?.role !== "institution") redirect("/portal");
+
+  const institutionId = profile?.institution_id;
 
   if (!institutionId) redirect("/login");
 

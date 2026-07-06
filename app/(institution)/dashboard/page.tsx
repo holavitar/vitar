@@ -26,15 +26,15 @@ export default async function DashboardPage() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  const { data: profile } = await supabase
+  const { data } = await supabase
     .from("users")
     .select("institution_id")
     .eq("id", user.id)
     .single();
 
-  if (!profile?.institution_id) redirect("/login");
+  const institutionId = (data as { institution_id?: string } | null)?.institution_id;
 
-  const institutionId = profile.institution_id;
+  if (!institutionId) redirect("/login");
 
   const [kpis, trend, riskPatients, recentAlerts] = await Promise.all([
     getDashboardKPIs(institutionId),
