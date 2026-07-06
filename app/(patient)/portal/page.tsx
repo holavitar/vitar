@@ -33,14 +33,16 @@ export default async function PatientHomePage() {
   const takenIds = new Set(todayLogs.map((l) => l.medication_id));
 
   // Institución: buscar el user con rol institution de la misma institución
-  const { data: instUser } = await supabase
+  const { data } = await supabase
     .from("users")
     .select("id")
     .eq("institution_id", patient.institution_id)
     .eq("role", "institution")
     .single();
 
-  const recentMessages = instUser
+  const instUser = data as { id?: string } | null;
+
+  const recentMessages = instUser?.id
     ? await getConversation(user.id, instUser.id)
     : [];
   const lastMessages = recentMessages.slice(-3);
