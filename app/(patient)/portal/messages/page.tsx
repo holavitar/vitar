@@ -16,15 +16,19 @@ export default async function PatientMessagesPage() {
   const patient = await getPatientProfile(user.id);
   if (!patient) redirect("/login");
 
-  // Buscar el usuario institución de la misma institución
-  const { data: instUser } = await supabase
+  const { data } = await supabase
     .from("users")
     .select("id, name")
     .eq("institution_id", patient.institution_id)
     .eq("role", "institution")
     .single();
 
-  const messages = instUser
+  const instUser = data as {
+    id?: string;
+    name?: string | null;
+  } | null;
+
+  const messages = instUser?.id
     ? await getConversation(user.id, instUser.id)
     : [];
 
