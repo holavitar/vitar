@@ -6,8 +6,8 @@ import { revalidatePath } from "next/cache";
 export async function resolveAlert(alertId: string): Promise<{ error?: string }> {
   const supabase = await createClient();
 
-  const { error } = await supabase
-    .from("alerts")
+  const { error } = await (supabase
+    .from("alerts") as any)
     .update({ status: "resolved" })
     .eq("id", alertId);
 
