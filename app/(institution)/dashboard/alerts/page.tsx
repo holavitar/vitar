@@ -23,16 +23,19 @@ export default async function AlertsPage({ searchParams }: PageProps) {
     .from("users")
     .select("institution_id")
     .eq("id", user.id)
+    .returns<{ institution_id: string | null }>()
     .single();
 
-  if (!profile?.institution_id) redirect("/login");
+  const institutionId = profile?.institution_id;
+
+  if (!institutionId) redirect("/login");
 
   const { status = "active" } = await searchParams;
 
   const [activeAlerts, resolvedAlerts, currentAlerts] = await Promise.all([
-    getAlerts(profile.institution_id, "active"),
-    getAlerts(profile.institution_id, "resolved"),
-    getAlerts(profile.institution_id, status),
+    getAlerts(institutionId, "active"),
+    getAlerts(institutionId, "resolved"),
+    getAlerts(institutionId, status),
   ]);
 
   const highCount   = activeAlerts.filter((a) => a.priority === "high").length;
