@@ -9,12 +9,14 @@ export async function markMedicationTaken(
 ): Promise<{ error?: string }> {
   const supabase = await createClient();
 
-  const { error } = await supabase.from("medication_logs").insert({
-    medication_id: medicationId,
-    patient_id: patientId,
-    taken_at: new Date().toISOString(),
-    status: "taken",
-  });
+  const { error } = await (supabase
+    .from("medication_logs") as any)
+    .insert({
+      medication_id: medicationId,
+      patient_id: patientId,
+      taken_at: new Date().toISOString(),
+      status: "taken",
+    });
 
   if (error) return { error: error.message };
 
@@ -30,11 +32,13 @@ export async function registerSymptom(
 ): Promise<{ error?: string }> {
   const supabase = await createClient();
 
-  const { error } = await supabase.from("symptoms").insert({
-    patient_id: patientId,
-    type,
-    notes: notes || null,
-  });
+  const { error } = await (supabase
+    .from("symptoms") as any)
+    .insert({
+      patient_id: patientId,
+      type,
+      notes: notes || null,
+    });
 
   if (error) return { error: error.message };
 
