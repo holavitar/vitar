@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import Link from "next/link";
 
 function VitarLogo({ height = 30 }) {
   return (
@@ -48,9 +49,12 @@ export default function Navbar() {
         </div>
 
         <div className="hidden md:flex items-center gap-3">
-          <a href="#" className={`text-sm ${scrolled ? "text-gray-700" : "text-gray-500"} hover:text-[#11325b] transition-colors`}>
+          <Link
+            href="/login"
+            className={`text-sm ${scrolled ? "text-gray-700" : "text-gray-500"} hover:text-[#11325b] transition-colors`}
+          >
             Iniciar sesión
-          </a>
+          </Link>
           <a href="#demo"
             className="bg-[#e7ba61] hover:bg-[#d4a94f] text-[#11325b] text-sm font-bold px-5 py-2.5 rounded-lg transition-all duration-200">
             Solicitar demo
@@ -73,6 +77,13 @@ export default function Navbar() {
             </a>
           ))}
           <hr className="border-gray-100" />
+          <Link
+            href="/login"
+            onClick={() => setMenuOpen(false)}
+            className="text-sm font-medium text-gray-700"
+          >
+            Iniciar sesión
+          </Link>
           <a href="#demo" onClick={() => setMenuOpen(false)}
             className="bg-[#e7ba61] text-[#11325b] text-sm font-bold px-5 py-3 rounded-lg text-center">
             Solicitar demo
