@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { Sidebar } from "@/components/dashboard/Sidebar";
+import { SidebarProvider } from "@/components/layout/sidebar-context";
 
 export default async function DashboardLayout({
   children,
@@ -23,11 +24,13 @@ export default async function DashboardLayout({
   if (role !== "institution") redirect("/portal");
 
   return (
-    <div className="flex min-h-screen bg-[#f2f2f2]">
-      <Sidebar />
-      <div className="flex-1 flex flex-col min-w-0">
-        {children}
+    <SidebarProvider>
+      <div className="flex min-h-screen bg-[#f2f2f2]">
+        <Sidebar />
+        <div className="flex-1 flex flex-col min-w-0">
+          {children}
+        </div>
       </div>
-    </div>
+    </SidebarProvider>
   );
 }

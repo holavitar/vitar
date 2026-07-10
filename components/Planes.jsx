@@ -69,7 +69,7 @@ export default function Planes() {
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {PLANES.map((plan) => {
             const precio = precioMensual(plan);
-            const destacado = plan.id === "entry";
+            const destacado = plan.id === "core";
             return (
               <div
                 key={plan.id}

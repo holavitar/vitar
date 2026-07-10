@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
+import { useSidebar } from "@/components/layout/sidebar-context";
 
 const NAV_ITEMS = [
   { href: "/portal",           label: "Inicio",         icon: Home },
@@ -28,6 +29,7 @@ const BOTTOM_ITEMS = [
 export function PatientSidebar() {
   const pathname = usePathname();
   const router   = useRouter();
+  const { open, setOpen } = useSidebar();
 
   const handleLogout = async () => {
     const supabase = createClient();
@@ -37,7 +39,24 @@ export function PatientSidebar() {
   };
 
   return (
-    <aside className="w-56 min-h-screen bg-white border-r border-gray-100 flex flex-col">
+    <>
+      {/* Backdrop (solo mobile, cuando el drawer está abierto) */}
+      {open && (
+        <div
+          className="fixed inset-0 z-30 bg-black/40 lg:hidden"
+          onClick={() => setOpen(false)}
+          aria-hidden
+        />
+      )}
+
+      <aside
+        className={cn(
+          "fixed inset-y-0 left-0 z-40 w-64 bg-white border-r border-gray-100 flex flex-col",
+          "transform transition-transform duration-300 ease-in-out",
+          "lg:static lg:z-auto lg:w-56 lg:translate-x-0 lg:min-h-screen",
+          open ? "translate-x-0" : "-translate-x-full"
+        )}
+      >
       {/* Logo */}
       <div className="px-5 py-5 border-b border-gray-100">
         <Link href="/portal">
@@ -65,6 +84,7 @@ export function PatientSidebar() {
             <Link
               key={href}
               href={href}
+              onClick={() => setOpen(false)}
               className={cn(
                 "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150",
                 isActive
@@ -88,6 +108,7 @@ export function PatientSidebar() {
           <Link
             key={href}
             href={href}
+            onClick={() => setOpen(false)}
             className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-400 hover:text-[#11325b] hover:bg-gray-50 transition-all duration-150"
           >
             <Icon size={16} className="text-gray-300" />
@@ -103,5 +124,6 @@ export function PatientSidebar() {
         </button>
       </div>
     </aside>
+    </>
   );
 }

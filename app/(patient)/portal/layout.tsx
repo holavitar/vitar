@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { PatientSidebar } from "@/components/portal/PatientSidebar";
+import { SidebarProvider } from "@/components/layout/sidebar-context";
 
 export default async function PatientLayout({
   children,
@@ -25,11 +26,13 @@ export default async function PatientLayout({
   }
 
   return (
-    <div className="flex min-h-screen bg-[#f2f2f2]">
-      <PatientSidebar />
-      <div className="flex-1 flex flex-col min-w-0">
-        {children}
+    <SidebarProvider>
+      <div className="flex min-h-screen bg-[#f2f2f2]">
+        <PatientSidebar />
+        <div className="flex-1 flex flex-col min-w-0">
+          {children}
+        </div>
       </div>
-    </div>
+    </SidebarProvider>
   );
 }

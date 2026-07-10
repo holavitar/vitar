@@ -16,6 +16,13 @@
 export const COSTO_REINTERNACION_ARS = 2_960_000;
 
 /**
+ * Costo de un día de internación clínica según el nomenclador oficial de la
+ * Ciudad de Buenos Aires (TIF §8.2). Es el bloque base del que se deriva el
+ * costo total de una reinternación (5-7 días + prácticas asociadas).
+ */
+export const COSTO_DIA_INTERNACION_ARS = 412_793;
+
+/**
  * Tipo de cambio oficial (venta, Banco Nación) usado en el TIF para expresar
  * los precios de suscripción — referencia 22/06/2026.
  */
