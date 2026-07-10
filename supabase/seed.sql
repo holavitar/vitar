@@ -1,5 +1,8 @@
 -- ─────────────────────────────────────────────────────────────
 -- VITAR — Seed de datos demo
+-- Paso 3 de 3. Ejecutar en el SQL Editor DESPUÉS de:
+--   1) schema.sql   2) policies.sql   3) crear los 2 usuarios en Auth
+--
 -- La demo queda enlazada ÚNICAMENTE a estos dos usuarios de Supabase Auth
 -- (por UUID explícito, sin depender del email):
 --   admin@vitar.com    → rol: institution

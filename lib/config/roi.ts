@@ -45,9 +45,8 @@ export interface PlanVitar {
   precioMensualARS: number;
 }
 
-// Free y Entry son cifras exactas del TIF (§8.2). Core y Premium se estiman
-// escalando el precio por paciente de Entry, porque la tabla original del TIF
-// quedó ambigua en la extracción del PDF; ajustar cuando se confirme el valor.
+// Precios de la tabla de planes del TIF (§8.2), en ARS/mes. Convertidos al TC
+// oficial de $1.480: Entry US$2.400, Core US$5.000, Premium US$7.000.
 export const PLANES: PlanVitar[] = [
   { id: "free", nombre: "Free", pacientes: [0, 5], precioMensualARS: 0 },
   { id: "entry", nombre: "Entry", pacientes: [6, 300], precioMensualARS: 3_552_000 },

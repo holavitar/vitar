@@ -29,9 +29,6 @@ const SERVICIOS = {
 
 function precioMensual(plan) {
   if (plan.precioMensualARS === 0) return { ars: "Gratis", usd: null };
-  // Sólo se publican los precios firmes del TIF (Free y Entry). Los tiers
-  // superiores se cotizan según la institución.
-  if (plan.id !== "entry") return { ars: "Consultar", usd: null };
   const ars = new Intl.NumberFormat("es-AR", {
     style: "currency",
     currency: "ARS",
