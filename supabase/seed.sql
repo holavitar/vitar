@@ -1,18 +1,19 @@
 -- ─────────────────────────────────────────────────────────────
 -- VITAR — Seed de datos demo
 -- IMPORTANTE: ejecutar DESPUÉS de crear los usuarios en
--- Supabase Auth con:
+-- Supabase Auth (Authentication → Users → Add user):
 --   admin@vitar.com / password123    → rol: institution
 --   paciente@vitar.com / password123 → rol: patient
--- Reemplazá los UUIDs de auth_admin_id y auth_patient_id
--- con los que genera Supabase Auth.
+--
+-- No hace falta copiar ningún UUID: el seed resuelve los IDs
+-- automáticamente por email desde auth.users.
 -- ─────────────────────────────────────────────────────────────
 
--- Variables (reemplazar con UUIDs reales de auth.users)
 do $$
 declare
-  auth_admin_id   uuid := '7108906b-94a6-403e-af46-3fbd5e092743';
-  auth_patient_id uuid := '6d022628-d6c8-4326-9f1e-315584a0fa05';
+  -- Se resuelven por email desde los usuarios de Supabase Auth
+  auth_admin_id   uuid := (select id from auth.users where email = 'admin@vitar.com');
+  auth_patient_id uuid := (select id from auth.users where email = 'paciente@vitar.com');
 
   inst_id   uuid := gen_random_uuid();
   p1  uuid := gen_random_uuid();
@@ -29,6 +30,12 @@ declare
   m1  uuid; m2  uuid; m3  uuid; m4  uuid; m5  uuid;
   m6  uuid; m7  uuid; m8  uuid; m9  uuid; m10 uuid;
 begin
+
+  -- Guarda: los usuarios deben existir en Supabase Auth antes de correr el seed
+  if auth_admin_id is null or auth_patient_id is null then
+    raise exception
+      'Faltan usuarios en auth.users. Creá admin@vitar.com y paciente@vitar.com en Authentication → Users antes de correr el seed.';
+  end if;
 
   -- Institución
   insert into institutions (id, name) values

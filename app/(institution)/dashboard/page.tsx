@@ -5,12 +5,14 @@ import { StatCard } from "@/components/dashboard/StatCard";
 import { AdherenceChart } from "@/components/dashboard/AdherenceChart";
 import { RiskTable } from "@/components/dashboard/RiskTable";
 import { RecentAlerts } from "@/components/dashboard/RecentAlerts";
+import { RoiPanel } from "@/components/dashboard/RoiPanel";
 import {
   getDashboardKPIs,
   getAdherenceTrend,
   getHighRiskPatients,
   getRecentAlerts,
 } from "@/lib/services/dashboard";
+import { getRoiMetrics } from "@/lib/services/roi";
 import {
   Users,
   TrendingUp,
@@ -36,11 +38,12 @@ export default async function DashboardPage() {
 
   if (!institutionId) redirect("/login");
 
-  const [kpis, trend, riskPatients, recentAlerts] = await Promise.all([
+  const [kpis, trend, riskPatients, recentAlerts, roi] = await Promise.all([
     getDashboardKPIs(institutionId),
     getAdherenceTrend(institutionId),
     getHighRiskPatients(institutionId),
     getRecentAlerts(institutionId),
+    getRoiMetrics(institutionId),
   ]);
 
   const today = new Date().toLocaleDateString("es-AR", {
@@ -101,6 +104,9 @@ export default async function DashboardPage() {
             <RecentAlerts alerts={recentAlerts} />
           </div>
         </div>
+
+        {/* ROI — reinternaciones evitadas valorizadas */}
+        <RoiPanel metrics={roi} />
 
         {/* Tabla de riesgo */}
         <RiskTable patients={riskPatients} />
