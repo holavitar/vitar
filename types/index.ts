@@ -34,3 +34,24 @@ export type AdherenceDataPoint = {
   date: string;
   adherence: number;
 };
+
+/**
+ * Métricas del modelo de ROI institucional (reinternaciones evitadas → ahorro).
+ * Fundamentado en el TIF §8.2 (ver lib/config/roi.ts).
+ */
+export type RoiMetrics = {
+  /** Pacientes con adherencia ≥ umbral: reinternaciones consideradas evitadas. */
+  reinternacionesEvitadas: number;
+  /** Ahorro bruto estimado en ARS (evitadas × costo por reinternación). */
+  ahorroBrutoARS: number;
+  /** Costo mensual de la suscripción según el plan de la institución (ARS). */
+  costoMensualARS: number;
+  /** Ahorro neto = ahorro bruto − costo de la suscripción (ARS). */
+  ahorroNetoARS: number;
+  /** ROI como múltiplo (ahorro bruto / costo). 0 si el plan es gratuito. */
+  roiMultiplo: number;
+  /** Nombre del plan aplicado (Free, Entry, Core, Premium). */
+  plan: string;
+  /** Costo de una única reinternación evitada, en ARS (para mostrar el ancla). */
+  costoReinternacionARS: number;
+};

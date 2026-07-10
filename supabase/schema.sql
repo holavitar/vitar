@@ -1,7 +1,21 @@
 -- ─────────────────────────────────────────────────────────────
--- VITAR — Schema v1
--- Ejecutar en: Supabase Dashboard → SQL Editor
+-- VITAR — Schema (estructura)
+-- Paso 1 de 3. Ejecutar en: Supabase Dashboard → SQL Editor
+--   1) schema.sql    ← este archivo (tipos, tablas, función + trigger)
+--   2) policies.sql  ← seguridad a nivel de fila (RLS)
+--   3) crear los 2 usuarios en Authentication → Users
+--   4) seed.sql      ← datos demo
 -- ─────────────────────────────────────────────────────────────
+
+-- Limpieza previa: hace este script SEGURO de re-ejecutar. Borra las tablas,
+-- la función y los tipos de la app si ya existían (no toca el esquema auth de
+-- Supabase, así que los usuarios creados en Authentication quedan intactos).
+drop table if exists
+  alerts, messages, symptoms, medication_logs,
+  medications, patients, users, institutions cascade;
+drop function if exists update_adherence_and_alert() cascade;
+drop type if exists
+  medication_status, alert_status, alert_priority, risk_level, user_role cascade;
 
 -- Tipos
 create type user_role as enum ('institution', 'patient');
@@ -113,7 +127,7 @@ begin
   if v_total = 0 then
     v_adh := 100;
   else
-    v_adh := round((v_taken::numeric / v_total::numeric) * 100, 2);
+    v_adh := round((v_taken::numeric / v_total::numeric) * 100, 0);
   end if;
 
   -- Actualizar adherencia en patients
@@ -149,114 +163,6 @@ after insert on medication_logs
 for each row execute function update_adherence_and_alert();
 
 -- ─────────────────────────────────────────────────────────────
--- RLS (Row Level Security)
+-- Siguiente paso: ejecutar policies.sql para habilitar la seguridad
+-- a nivel de fila (RLS). Luego crear los usuarios y correr seed.sql.
 -- ─────────────────────────────────────────────────────────────
-alter table institutions    enable row level security;
-alter table users           enable row level security;
-alter table patients        enable row level security;
-alter table medications     enable row level security;
-alter table medication_logs enable row level security;
-alter table symptoms        enable row level security;
-alter table messages        enable row level security;
-alter table alerts          enable row level security;
-
--- users: cada uno ve su propio perfil
-create policy "users: ver propio perfil"
-  on users for select
-  using (id = auth.uid());
-
--- institutions: los usuarios de la institución la ven
-create policy "institutions: ver la propia"
-  on institutions for select
-  using (
-    id in (select institution_id from users where id = auth.uid())
-  );
-
--- patients: institución ve sus pacientes; paciente se ve a sí mismo
-create policy "patients: institución ve los suyos"
-  on patients for select
-  using (
-    institution_id in (
-      select institution_id
-      from users
-      where id = auth.uid()
-    )
-  );
-
-create policy "patients: institución puede actualizar"
-  on patients for update
-  using (
-    institution_id in (select institution_id from users where id = auth.uid())
-  );
-
--- medications
-create policy "medications: ver si es de tu paciente"
-  on medications for select
-  using (
-    patient_id in (
-      select id from patients where institution_id in (
-        select institution_id from users where id = auth.uid()
-      )
-    )
-  );
-
--- medication_logs: insertar y ver
-create policy "medication_logs: ver"
-  on medication_logs for select
-  using (
-    patient_id in (
-      select id from patients where institution_id in (
-        select institution_id from users where id = auth.uid()
-      )
-    )
-  );
-
-create policy "medication_logs: insertar"
-  on medication_logs for insert
-  with check (auth.uid() is not null);
-
--- alerts
-create policy "alerts: ver"
-  on alerts for select
-  using (
-    patient_id in (
-      select id from patients where institution_id in (
-        select institution_id from users where id = auth.uid()
-      )
-    )
-  );
-
-create policy "alerts: actualizar estado"
-  on alerts for update
-  using (
-    patient_id in (
-      select id from patients where institution_id in (
-        select institution_id from users where id = auth.uid()
-      )
-    )
-  );
-
--- messages
-create policy "messages: ver los propios"
-  on messages for select
-  using (sender_id = auth.uid() or receiver_id = auth.uid());
-
-create policy "messages: insertar"
-  on messages for insert
-  with check (sender_id = auth.uid());
-
--- symptoms
-create policy "symptoms: ver"
-  on symptoms for select
-  using (
-    patient_id in (
-      select id from patients where institution_id in (
-        select institution_id from users where id = auth.uid()
-      )
-    )
-    or patient_id in (select id from patients)
-  );
-
-create policy "symptoms: insertar"
-  on symptoms for insert
-  with check (auth.uid() is not null);

@@ -27,6 +27,7 @@ export default function Navbar() {
     { label: "Solución", href: "#solucion" },
     { label: "Cómo funciona", href: "#como-funciona" },
     { label: "Beneficios", href: "#beneficios" },
+    { label: "Planes", href: "#planes" },
     { label: "Seguridad", href: "#seguridad" },
   ];
 

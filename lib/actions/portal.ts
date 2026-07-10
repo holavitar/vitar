@@ -9,8 +9,8 @@ export async function markMedicationTaken(
 ): Promise<{ error?: string }> {
   const supabase = await createClient();
 
-  const { error } = await (supabase
-    .from("medication_logs") as any)
+  const { error } = await supabase
+    .from("medication_logs")
     .insert({
       medication_id: medicationId,
       patient_id: patientId,
@@ -32,8 +32,8 @@ export async function registerSymptom(
 ): Promise<{ error?: string }> {
   const supabase = await createClient();
 
-  const { error } = await (supabase
-    .from("symptoms") as any)
+  const { error } = await supabase
+    .from("symptoms")
     .insert({
       patient_id: patientId,
       type,

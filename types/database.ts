@@ -25,6 +25,7 @@ export type Database = {
           name?: string;
           created_at?: string;
         };
+        Relationships: [];
       };
       users: {
         Row: {
@@ -51,6 +52,7 @@ export type Database = {
           name?: string;
           created_at?: string;
         };
+        Relationships: [];
       };
       patients: {
         Row: {
@@ -80,6 +82,7 @@ export type Database = {
           adherence?: number;
           created_at?: string;
         };
+        Relationships: [];
       };
       medications: {
         Row: {
@@ -109,6 +112,7 @@ export type Database = {
           frequency?: string;
           created_at?: string;
         };
+        Relationships: [];
       };
       medication_logs: {
         Row: {
@@ -135,6 +139,7 @@ export type Database = {
           status?: "taken" | "missed" | "pending";
           created_at?: string;
         };
+        Relationships: [];
       };
       symptoms: {
         Row: {
@@ -158,6 +163,7 @@ export type Database = {
           notes?: string | null;
           created_at?: string;
         };
+        Relationships: [];
       };
       messages: {
         Row: {
@@ -181,6 +187,7 @@ export type Database = {
           content?: string;
           created_at?: string;
         };
+        Relationships: [];
       };
       alerts: {
         Row: {
@@ -207,7 +214,20 @@ export type Database = {
           status?: "active" | "resolved";
           created_at?: string;
         };
+        Relationships: [];
       };
+    };
+    Views: {
+      [_ in never]: never;
+    };
+    Functions: {
+      [_ in never]: never;
+    };
+    Enums: {
+      [_ in never]: never;
+    };
+    CompositeTypes: {
+      [_ in never]: never;
     };
   };
 };
