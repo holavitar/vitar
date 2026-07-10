@@ -37,35 +37,10 @@ export function Sidebar() {
       {/* Logo */}
       <div className="px-5 py-6 border-b border-white/10">
         <Link href="/dashboard">
-          <svg
-            height="26"
-            viewBox="0 0 440 148"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            aria-label="Vitar"
-          >
-            <path
-              fill="#e7ba61"
-              d="M98 64C98 73.7 94.2 83 87.4 89.8L58.8 118.4C51.7 125.5 42.3 129.1 32.8 129.1s-18.9-3.6-26-10.7C-.5 111.2-.5 100.2 6.7 92.9L35.3 64.3C42.4 57.2 51.8 53.6 61.3 53.6s18.9 3.6 26 10.7l.1.1C94.2 71 98 80.3 98 90Z"
-              transform="translate(21 9)"
-            />
-            <path
-              fill="white"
-              d="M98 64C98 73.7 94.2 83 87.4 89.8L58.8 118.4C51.7 125.5 42.3 129.1 32.8 129.1s-18.9-3.6-26-10.7C-.5 111.2-.5 100.2 6.7 92.9L35.3 64.3C42.4 57.2 51.8 53.6 61.3 53.6s18.9 3.6 26 10.7l.1.1C94.2 71 98 80.3 98 90Z"
-              transform="translate(0 -9)"
-            />
-            <text
-              x="133"
-              y="117"
-              fontFamily="Helvetica Now Display,Helvetica Neue,Helvetica,Arial,sans-serif"
-              fontWeight="700"
-              fontSize="96"
-              fill="white"
-              letterSpacing="-2"
-            >
-              vitar
-            </text>
-          </svg>
+          {/* Logo institucional desde /public/logo.svg. El archivo es azul+dorado;
+              sobre el sidebar oscuro se renderiza en blanco (brightness-0 invert). */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logo.svg" alt="Vitar" className="h-7 w-auto brightness-0 invert" />
         </Link>
         <p className="text-white/40 text-[10px] mt-1.5" style={{ fontFamily: "Verdana, Geneva, sans-serif" }}>
           Panel institucional
