@@ -113,7 +113,7 @@ begin
   if v_total = 0 then
     v_adh := 100;
   else
-    v_adh := round((v_taken::numeric / v_total::numeric) * 100, 2);
+    v_adh := round((v_taken::numeric / v_total::numeric) * 100, 0);
   end if;
 
   -- Actualizar adherencia en patients

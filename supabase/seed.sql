@@ -26,8 +26,18 @@ declare
   p9  uuid := gen_random_uuid();
   p10 uuid := gen_random_uuid();
 
-  m1  uuid; m2  uuid; m3  uuid; m4  uuid; m5  uuid;
-  m6  uuid; m7  uuid; m8  uuid; m9  uuid; m10 uuid;
+  -- Medicamento "principal" de cada paciente (sobre el que se registra el historial)
+  m1  uuid := gen_random_uuid(); m2  uuid := gen_random_uuid();
+  m3  uuid := gen_random_uuid(); m4  uuid := gen_random_uuid();
+  m5  uuid := gen_random_uuid(); m6  uuid := gen_random_uuid();
+  m7  uuid := gen_random_uuid(); m8  uuid := gen_random_uuid();
+  m9  uuid := gen_random_uuid(); m10 uuid := gen_random_uuid();
+
+  -- Variables para el armado del historial de adherencia
+  v_days int := 30;   -- días de historial
+  rec    record;
+  d      int;
+  a      int;         -- cantidad de tomas realizadas en la ventana (define el %)
 begin
 
   -- Guarda: los UUID deben corresponder a usuarios existentes en Auth
@@ -46,7 +56,8 @@ begin
     (auth_admin_id,   inst_id, 'institution', 'admin@vitar.com',    'Dr. Administrador'),
     (auth_patient_id, inst_id, 'patient',     'paciente@vitar.com', 'Roberto Martínez');
 
-  -- Pacientes (10)
+  -- Pacientes (10). La adherencia inicial es un placeholder: se recalcula al
+  -- final a partir del historial real de tomas cargado más abajo.
   insert into patients (id, institution_id, name, condition, risk, adherence) values
     (p1,  inst_id, 'Roberto Martínez',  'Hipertensión arterial',       'high',   42),
     (p2,  inst_id, 'Carmen López',      'Diabetes tipo 2',             'high',   55),
@@ -59,26 +70,77 @@ begin
     (p9,  inst_id, 'Carlos Méndez',     'Hipotiroidismo',              'low',    89),
     (p10, inst_id, 'Elena Castro',      'Fibrilación auricular',       'medium', 63);
 
-  -- Medicamentos
+  -- Medicamentos. El primero de cada paciente usa un id fijo (m1..m10) para
+  -- poder asociarle el historial de tomas.
   insert into medications (id, patient_id, name, dose, schedule, frequency)
   values
-    (gen_random_uuid(), p1, 'Enalapril',      '10mg',   '08:00',       'Cada 24 hs'),
+    (m1,                p1, 'Enalapril',      '10mg',   '08:00',       'Cada 24 hs'),
     (gen_random_uuid(), p1, 'Amlodipina',     '5mg',    '20:00',       'Cada 24 hs'),
-    (gen_random_uuid(), p2, 'Metformina',     '850mg',  '08:00, 20:00','Cada 12 hs'),
+    (m2,                p2, 'Metformina',     '850mg',  '08:00, 20:00','Cada 12 hs'),
     (gen_random_uuid(), p2, 'Glibenclamida',  '5mg',    '12:00',       'Cada 24 hs'),
-    (gen_random_uuid(), p3, 'Carvedilol',     '25mg',   '08:00, 20:00','Cada 12 hs'),
-    (gen_random_uuid(), p4, 'Salbutamol',     '100mcg', 'A demanda',   'Según necesidad'),
-    (gen_random_uuid(), p5, 'Losartán',       '50mg',   '08:00',       'Cada 24 hs'),
-    (gen_random_uuid(), p6, 'Insulina NPH',   '20 UI',  '22:00',       'Cada 24 hs'),
-    (gen_random_uuid(), p7, 'Furosemida',     '40mg',   '08:00',       'Cada 24 hs'),
-    (gen_random_uuid(), p8, 'Metotrexato',    '7.5mg',  'Lunes',       'Semanal'),
-    (gen_random_uuid(), p9, 'Levotiroxina',   '50mcg',  '07:00',       'Cada 24 hs'),
-    (gen_random_uuid(), p10,'Rivaroxabán',    '20mg',   '20:00',       'Cada 24 hs');
+    (m3,                p3, 'Carvedilol',     '25mg',   '08:00, 20:00','Cada 12 hs'),
+    (m4,                p4, 'Salbutamol',     '100mcg', 'A demanda',   'Según necesidad'),
+    (m5,                p5, 'Losartán',       '50mg',   '08:00',       'Cada 24 hs'),
+    (m6,                p6, 'Insulina NPH',   '20 UI',  '22:00',       'Cada 24 hs'),
+    (m7,                p7, 'Furosemida',     '40mg',   '08:00',       'Cada 24 hs'),
+    (m8,                p8, 'Metotrexato',    '7.5mg',  'Lunes',       'Semanal'),
+    (m9,                p9, 'Levotiroxina',   '50mcg',  '07:00',       'Cada 24 hs'),
+    (m10,               p10,'Rivaroxabán',    '20mg',   '20:00',       'Cada 24 hs');
 
-  -- Alertas activas para pacientes de alto riesgo
+  -- ───────────────────────────────────────────────────────────
+  -- Historial de adherencia (regla de negocio: tomas / programadas)
+  -- Se cargan v_days tomas programadas por paciente, marcando 'taken' o
+  -- 'missed' con distribución pareja para alcanzar el % objetivo. El trigger
+  -- se deshabilita durante la carga para no recalcular ni alertar en cada
+  -- inserción histórica; se recalcula una sola vez al final.
+  -- ───────────────────────────────────────────────────────────
+  alter table medication_logs disable trigger trg_update_adherence;
+
+  for rec in
+    select * from (values
+      (p1,  m1,  42), (p2,  m2,  55), (p3,  m3,  67), (p4,  m4,  71),
+      (p5,  m5,  88), (p6,  m6,  92), (p7,  m7,  74), (p8,  m8,  95),
+      (p9,  m9,  89), (p10, m10, 63)
+    ) as t(pid, mid, target)
+  loop
+    a := round(v_days * rec.target / 100.0);
+    for d in 0 .. v_days - 1 loop
+      insert into medication_logs (medication_id, patient_id, taken_at, status)
+      values (
+        rec.mid,
+        rec.pid,
+        now() - make_interval(days => v_days - 1 - d) - interval '4 hours',
+        case
+          when floor((d + 1) * a::numeric / v_days) > floor(d * a::numeric / v_days)
+          then 'taken'::medication_status
+          else 'missed'::medication_status
+        end
+      );
+    end loop;
+  end loop;
+
+  alter table medication_logs enable trigger trg_update_adherence;
+
+  -- Recalcular adherencia y riesgo a partir del historial real
+  update patients pt set
+    adherence = sub.adh,
+    risk = case
+             when sub.adh < 60 then 'high'::risk_level
+             when sub.adh < 80 then 'medium'::risk_level
+             else 'low'::risk_level
+           end
+  from (
+    select patient_id,
+           round(100.0 * count(*) filter (where status = 'taken') / count(*), 0) as adh
+    from medication_logs
+    group by patient_id
+  ) sub
+  where pt.id = sub.patient_id;
+
+  -- Alertas activas (curadas para la demo)
   insert into alerts (patient_id, type, priority, status, created_at) values
     (p1, 'Sin registro de medicación hace 3 días', 'high',   'active', now() - interval '3 hours'),
-    (p2, 'Adherencia crítica: 55%',                'high',   'active', now() - interval '1 day'),
+    (p2, 'Adherencia crítica por debajo del 60%',  'high',   'active', now() - interval '1 day'),
     (p3, 'Adherencia por debajo del 70%',          'medium', 'active', now() - interval '2 days'),
     (p4, 'Síntoma reportado: disnea severa',       'medium', 'active', now() - interval '5 hours'),
     (p10,'Adherencia inferior al 65%',             'medium', 'active', now() - interval '4 hours');
