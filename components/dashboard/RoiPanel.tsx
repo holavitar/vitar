@@ -11,6 +11,7 @@ import {
 } from "recharts";
 import { ShieldCheck, TrendingUp } from "lucide-react";
 import { formatARS } from "@/lib/utils";
+import { COSTO_DIA_INTERNACION_ARS } from "@/lib/config/roi";
 import type { RoiMetrics } from "@/types";
 
 interface RoiPanelProps {
@@ -130,10 +131,19 @@ export function RoiPanel({ metrics }: RoiPanelProps) {
               </Bar>
             </BarChart>
           </ResponsiveContainer>
-          <p className="text-[10px] text-gray-400 mt-2 leading-relaxed" style={{ fontFamily: BODY_FONT }}>
-            Modelo TIF §8.2: cada reinternación evitada equivale a{" "}
-            {formatARS(metrics.costoReinternacionARS)} de ahorro para la institución.
-          </p>
+          <div className="mt-3 pt-3 border-t border-gray-100">
+            <p className="text-[11px] text-gray-500 leading-relaxed" style={{ fontFamily: BODY_FONT }}>
+              <span className="font-semibold text-[#11325b]">
+                Cada reinternación evitada es un costo directo que la institución no afronta.
+              </span>{" "}
+              El valor de {formatARS(metrics.costoReinternacionARS)} por caso se compone de{" "}
+              {formatARS(COSTO_DIA_INTERNACION_ARS)} por día de internación clínica, por una
+              estadía promedio de 5 a 7 días, más las prácticas asociadas a la patología.
+              Al sostener la adherencia se evitan esas internaciones: se liberan camas y
+              recursos asistenciales, y el retorno se justifica desde el primer paciente que
+              se mantiene en tratamiento.
+            </p>
+          </div>
         </div>
       </div>
     </div>
