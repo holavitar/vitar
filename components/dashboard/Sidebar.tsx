@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
+import { useSidebar } from "@/components/layout/sidebar-context";
 
 const NAV_ITEMS = [
   { href: "/dashboard",          label: "Resumen",       icon: LayoutDashboard },
@@ -24,6 +25,7 @@ const NAV_ITEMS = [
 export function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
+  const { open, setOpen } = useSidebar();
 
   const handleLogout = async () => {
     const supabase = createClient();
@@ -33,7 +35,24 @@ export function Sidebar() {
   };
 
   return (
-    <aside className="w-60 min-h-screen bg-[#11325b] flex flex-col">
+    <>
+      {/* Backdrop (solo mobile, cuando el drawer está abierto) */}
+      {open && (
+        <div
+          className="fixed inset-0 z-30 bg-black/40 lg:hidden"
+          onClick={() => setOpen(false)}
+          aria-hidden
+        />
+      )}
+
+      <aside
+        className={cn(
+          "fixed inset-y-0 left-0 z-40 w-64 bg-[#11325b] flex flex-col",
+          "transform transition-transform duration-300 ease-in-out",
+          "lg:static lg:z-auto lg:w-60 lg:translate-x-0 lg:min-h-screen",
+          open ? "translate-x-0" : "-translate-x-full"
+        )}
+      >
       {/* Logo */}
       <div className="px-5 py-6 border-b border-white/10">
         <Link href="/dashboard">
@@ -59,6 +78,7 @@ export function Sidebar() {
             <Link
               key={href}
               href={href}
+              onClick={() => setOpen(false)}
               className={cn(
                 "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150",
                 isActive
@@ -93,5 +113,6 @@ export function Sidebar() {
         </button>
       </div>
     </aside>
+    </>
   );
 }

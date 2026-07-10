@@ -1,7 +1,8 @@
 "use client";
 
-import { Bell } from "lucide-react";
+import { Bell, Menu } from "lucide-react";
 import { useUser } from "@/hooks/useUser";
+import { useSidebar } from "@/components/layout/sidebar-context";
 
 interface TopBarProps {
   title: string;
@@ -10,16 +11,26 @@ interface TopBarProps {
 
 export function TopBar({ title, subtitle }: TopBarProps) {
   const { user } = useUser();
+  const { setOpen } = useSidebar();
 
   const initials = user?.name
     ? user.name.split(" ").map((n) => n[0]).slice(0, 2).join("").toUpperCase()
     : "?";
 
   return (
-    <header className="h-14 bg-white border-b border-gray-100 px-6 flex items-center justify-between flex-shrink-0">
-      <div>
+    <header className="h-14 bg-white border-b border-gray-100 px-4 sm:px-6 flex items-center justify-between flex-shrink-0">
+      <div className="flex items-center gap-3 min-w-0">
+        {/* Botón menú — solo mobile */}
+        <button
+          onClick={() => setOpen(true)}
+          className="lg:hidden w-9 h-9 -ml-1 flex items-center justify-center rounded-lg hover:bg-gray-50 transition-colors flex-shrink-0"
+          aria-label="Abrir menú"
+        >
+          <Menu size={20} className="text-[#11325b]" />
+        </button>
+        <div className="min-w-0">
         <h1
-          className="text-[#11325b] font-bold text-base leading-tight"
+          className="text-[#11325b] font-bold text-base leading-tight truncate"
           style={{ fontFamily: "'Helvetica Now Display', 'Helvetica Neue', Helvetica, Arial, sans-serif" }}
         >
           {title}
@@ -29,6 +40,7 @@ export function TopBar({ title, subtitle }: TopBarProps) {
             {subtitle}
           </p>
         )}
+        </div>
       </div>
 
       <div className="flex items-center gap-3">
