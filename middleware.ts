@@ -4,9 +4,19 @@ import { NextResponse, type NextRequest } from "next/server";
 export async function middleware(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
 
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+  // Sin configuración válida de Supabase (falta la env o la URL no es un
+  // https://...), dejar pasar la request en lugar de tumbar todo el sitio con
+  // un 500. La landing y el login siguen disponibles.
+  if (!supabaseUrl || !supabaseKey || !/^https?:\/\//.test(supabaseUrl)) {
+    return supabaseResponse;
+  }
+
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    supabaseUrl,
+    supabaseKey,
     {
       cookies: {
         getAll() {
@@ -25,7 +35,15 @@ export async function middleware(request: NextRequest) {
     }
   );
 
-  const { data: { user } } = await supabase.auth.getUser();
+  let user = null;
+  try {
+    const result = await supabase.auth.getUser();
+    user = result.data.user;
+  } catch {
+    // Error transitorio o de configuración: tratar como no autenticado
+    user = null;
+  }
+
   const { pathname } = request.nextUrl;
 
   // Rutas públicas — siempre permitidas
