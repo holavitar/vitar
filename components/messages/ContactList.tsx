@@ -7,7 +7,8 @@ interface Contact {
   id: string;
   name: string;
   condition: string;
-  lastMessage?: string;
+  userId?: string | null;
+  lastMessage?: string | null;
 }
 
 interface ContactListProps {
@@ -67,17 +68,27 @@ export function ContactList({ contacts, selectedId }: ContactListProps) {
                 {initials}
               </div>
               <div className="flex-1 min-w-0">
-                <div className={cn(
-                  "text-xs font-semibold truncate",
-                  isSelected ? "text-[#11325b]" : "text-gray-700"
-                )}>
-                  {contact.name}
+                <div className="flex items-center gap-1.5">
+                  <span className={cn(
+                    "text-xs font-semibold truncate",
+                    isSelected ? "text-[#11325b]" : "text-gray-700"
+                  )}>
+                    {contact.name}
+                  </span>
+                  {contact.userId === null && (
+                    <span className="text-[8px] font-semibold text-gray-400 bg-gray-100 rounded px-1 py-px flex-shrink-0">
+                      SIN PORTAL
+                    </span>
+                  )}
                 </div>
                 <div
-                  className="text-[10px] text-gray-400 truncate"
+                  className={cn(
+                    "text-[10px] truncate",
+                    contact.lastMessage ? "text-gray-500" : "text-gray-400"
+                  )}
                   style={{ fontFamily: "Verdana, Geneva, sans-serif" }}
                 >
-                  {contact.condition}
+                  {contact.lastMessage ?? contact.condition}
                 </div>
               </div>
             </button>

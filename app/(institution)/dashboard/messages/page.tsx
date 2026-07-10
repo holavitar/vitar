@@ -39,14 +39,13 @@ export default async function MessagesPage({ searchParams }: PageProps) {
 
   const { patient: selectedPatientId } = await searchParams;
 
-  const [contacts, messages] = await Promise.all([
-    getPatientContacts(institutionId),
-    selectedPatientId
-      ? getConversation(user.id, selectedPatientId)
-      : Promise.resolve([]),
-  ]);
-
+  const contacts = await getPatientContacts(institutionId, user.id);
   const selectedContact = contacts.find((c) => c.id === selectedPatientId);
+
+  // La conversación se busca contra el users.id del paciente (no patients.id)
+  const messages = selectedContact?.userId
+    ? await getConversation(user.id, selectedContact.userId)
+    : [];
 
   return (
     <>
@@ -60,28 +59,46 @@ export default async function MessagesPage({ searchParams }: PageProps) {
 
         {/* Chat area */}
         <div className="flex-1 flex flex-col min-w-0">
-          {selectedContact ? (
+          {selectedContact && selectedContact.userId ? (
             <ChatWindow
               currentUserId={user.id}
               currentUserName={profile.name ?? "Institución"}
-              patientId={selectedContact.id}
-              patientName={selectedContact.name}
+              otherUserId={selectedContact.userId}
+              otherName={selectedContact.name}
+              otherSubtitle="Paciente"
               initialMessages={messages}
             />
           ) : (
-            <div className="flex-1 flex items-center justify-center bg-[#f2f2f2]">
-              <div className="w-14 h-14 rounded-2xl bg-[#11325b]/8 flex items-center justify-center mx-auto mb-4">
+            <div className="flex-1 flex flex-col items-center justify-center bg-[#f2f2f2] px-6 text-center">
+              <div className="w-14 h-14 rounded-2xl bg-[#11325b]/8 flex items-center justify-center mb-4">
                 <MessageSquare size={24} className="text-[#11325b]/40" />
               </div>
-              <p className="font-semibold text-[#11325b] text-sm mb-1">
-                Seleccioná un paciente
-              </p>
-              <p
-                className="text-gray-400 text-xs max-w-xs"
-                style={{ fontFamily: "Verdana, Geneva, sans-serif" }}
-              >
-                Elegí un contacto de la lista para iniciar o continuar una conversación.
-              </p>
+              {selectedContact ? (
+                <>
+                  <p className="font-semibold text-[#11325b] text-sm mb-1">
+                    {selectedContact.name} todavía no activó su portal
+                  </p>
+                  <p
+                    className="text-gray-400 text-xs max-w-xs"
+                    style={{ fontFamily: "Verdana, Geneva, sans-serif" }}
+                  >
+                    Este paciente aún no tiene una cuenta de acceso, por lo que no
+                    puede recibir mensajes todavía.
+                  </p>
+                </>
+              ) : (
+                <>
+                  <p className="font-semibold text-[#11325b] text-sm mb-1">
+                    Seleccioná un paciente
+                  </p>
+                  <p
+                    className="text-gray-400 text-xs max-w-xs"
+                    style={{ fontFamily: "Verdana, Geneva, sans-serif" }}
+                  >
+                    Elegí un contacto de la lista para iniciar o continuar una conversación.
+                  </p>
+                </>
+              )}
             </div>
           )}
         </div>

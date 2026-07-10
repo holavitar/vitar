@@ -152,4 +152,20 @@ begin
     (p3,  'fatiga',  'Cansancio extremo',           now() - interval '6 hours'),
     (p4,  'otro',    'Disnea al caminar 50 metros', now() - interval '5 hours');
 
+  -- Conversación inicial institución ↔ paciente (Roberto), a partir de la
+  -- detección de baja adherencia. Demuestra el paso "envía mensaje" del flujo.
+  insert into messages (sender_id, receiver_id, content, created_at) values
+    (auth_admin_id, auth_patient_id,
+     'Hola Roberto, en el seguimiento vimos que tu adherencia bajó esta semana. ¿Tuviste algún inconveniente con la medicación?',
+     now() - interval '2 days'),
+    (auth_patient_id, auth_admin_id,
+     'Hola doctor. Estuve de viaje y me salteé algunas tomas del Enalapril.',
+     now() - interval '2 days' + interval '40 minutes'),
+    (auth_admin_id, auth_patient_id,
+     'Entiendo. Es importante retomar el esquema para evitar complicaciones. Acordate de registrar cada toma desde la app así podemos seguirte de cerca.',
+     now() - interval '1 day'),
+    (auth_patient_id, auth_admin_id,
+     'Perfecto, ya lo retomo hoy. Muchas gracias por el seguimiento.',
+     now() - interval '1 day' + interval '15 minutes');
+
 end $$;

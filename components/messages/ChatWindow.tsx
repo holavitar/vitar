@@ -10,8 +10,11 @@ import type { MessageWithSender } from "@/lib/services/messages";
 interface ChatWindowProps {
   currentUserId: string;
   currentUserName: string;
-  patientId: string;
-  patientName: string;
+  /** users.id del otro extremo de la conversación (paciente o institución). */
+  otherUserId: string;
+  otherName: string;
+  /** Etiqueta bajo el nombre (ej. "Paciente" o "Equipo médico"). */
+  otherSubtitle?: string;
   initialMessages: MessageWithSender[];
 }
 
@@ -49,8 +52,9 @@ function groupByDay(messages: MessageWithSender[]) {
 
 export function ChatWindow({
   currentUserId,
-  patientId,
-  patientName,
+  otherUserId,
+  otherName,
+  otherSubtitle = "Paciente",
   initialMessages,
 }: ChatWindowProps) {
   const [messages, setMessages] = useState<MessageWithSender[]>(initialMessages);
@@ -67,11 +71,11 @@ export function ChatWindow({
   // Polling cada 5 segundos
   useEffect(() => {
     const interval = setInterval(async () => {
-      const fresh = await getConversation(currentUserId, patientId);
+      const fresh = await getConversation(currentUserId, otherUserId);
       setMessages(fresh);
     }, 5000);
     return () => clearInterval(interval);
-  }, [currentUserId, patientId]);
+  }, [currentUserId, otherUserId]);
 
   const handleSend = () => {
     if (!input.trim() || isPending) return;
@@ -83,7 +87,7 @@ export function ChatWindow({
     const optimistic: MessageWithSender = {
       id:          `temp-${Date.now()}`,
       sender_id:   currentUserId,
-      receiver_id: patientId,
+      receiver_id: otherUserId,
       content,
       created_at:  new Date().toISOString(),
       sender_name: "Vos",
@@ -91,7 +95,7 @@ export function ChatWindow({
     setMessages((prev) => [...prev, optimistic]);
 
     startTransition(async () => {
-      const { error } = await sendMessage(currentUserId, patientId, content);
+      const { error } = await sendMessage(currentUserId, otherUserId, content);
       if (error) {
         setError(error);
         setMessages((prev) => prev.filter((m) => m.id !== optimistic.id));
@@ -114,13 +118,13 @@ export function ChatWindow({
       <div className="px-5 py-3.5 border-b border-gray-100 flex items-center gap-3 bg-white flex-shrink-0">
         <div className="w-8 h-8 rounded-full bg-[#11325b]/10 flex items-center justify-center">
           <span className="text-[#11325b] font-bold text-xs">
-            {patientName.split(" ").map((n) => n[0]).slice(0, 2).join("")}
+            {otherName.split(" ").map((n) => n[0]).slice(0, 2).join("")}
           </span>
         </div>
         <div>
-          <div className="font-semibold text-[#11325b] text-sm">{patientName}</div>
+          <div className="font-semibold text-[#11325b] text-sm">{otherName}</div>
           <div className="text-[10px] text-gray-400" style={{ fontFamily: "Verdana, Geneva, sans-serif" }}>
-            Paciente
+            {otherSubtitle}
           </div>
         </div>
       </div>

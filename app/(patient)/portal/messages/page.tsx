@@ -42,8 +42,9 @@ export default async function PatientMessagesPage() {
             <ChatWindow
               currentUserId={user.id}
               currentUserName={patient.name}
-              patientId={instUser.id}
-              patientName={instUser.name ?? "Equipo médico"}
+              otherUserId={instUser.id}
+              otherName={instUser.name ?? "Equipo médico"}
+              otherSubtitle="Equipo médico"
               initialMessages={messages}
             />
           ) : (
