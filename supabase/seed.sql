@@ -2,18 +2,20 @@
 -- VITAR — Seed de datos demo
 -- IMPORTANTE: ejecutar DESPUÉS de crear los usuarios en
 -- Supabase Auth (Authentication → Users → Add user):
---   admin@vitar.com / password123    → rol: institution
---   paciente@vitar.com / password123 → rol: patient
+--   institución → rol: institution
+--   paciente    → rol: patient
 --
--- No hace falta copiar ningún UUID: el seed resuelve los IDs
--- automáticamente por email desde auth.users.
+-- Pegá abajo los UUID exactos de esos dos usuarios (Authentication →
+-- Users → clic en el usuario → copiar "User UID"). La demo queda
+-- enlazada únicamente a esos dos IDs, sin depender del email.
 -- ─────────────────────────────────────────────────────────────
 
 do $$
 declare
-  -- Se resuelven por email desde los usuarios de Supabase Auth
-  auth_admin_id   uuid := (select id from auth.users where email = 'admin@vitar.com');
-  auth_patient_id uuid := (select id from auth.users where email = 'paciente@vitar.com');
+  -- ▼▼▼ REEMPLAZAR por los UUID reales de tus usuarios de Supabase Auth ▼▼▼
+  auth_admin_id   uuid := '00000000-0000-0000-0000-000000000000';  -- usuario institución
+  auth_patient_id uuid := '00000000-0000-0000-0000-000000000000';  -- usuario paciente
+  -- ▲▲▲ REEMPLAZAR ▲▲▲
 
   inst_id   uuid := gen_random_uuid();
   p1  uuid := gen_random_uuid();
@@ -31,10 +33,18 @@ declare
   m6  uuid; m7  uuid; m8  uuid; m9  uuid; m10 uuid;
 begin
 
-  -- Guarda: los usuarios deben existir en Supabase Auth antes de correr el seed
-  if auth_admin_id is null or auth_patient_id is null then
+  -- Guarda: hay que reemplazar los placeholders por los UUID reales
+  if auth_admin_id = '00000000-0000-0000-0000-000000000000'
+     or auth_patient_id = '00000000-0000-0000-0000-000000000000' then
     raise exception
-      'Faltan usuarios en auth.users. Creá admin@vitar.com y paciente@vitar.com en Authentication → Users antes de correr el seed.';
+      'Reemplazá auth_admin_id y auth_patient_id por los UUID reales de tus usuarios de Supabase Auth antes de correr el seed.';
+  end if;
+
+  -- Guarda: los UUID deben corresponder a usuarios existentes en Auth
+  if not exists (select 1 from auth.users where id = auth_admin_id)
+     or not exists (select 1 from auth.users where id = auth_patient_id) then
+    raise exception
+      'Alguno de los UUID no existe en auth.users. Verificá que copiaste los User UID correctos.';
   end if;
 
   -- Institución
