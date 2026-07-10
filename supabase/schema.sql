@@ -7,6 +7,16 @@
 --   4) seed.sql      ← datos demo
 -- ─────────────────────────────────────────────────────────────
 
+-- Limpieza previa: hace este script SEGURO de re-ejecutar. Borra las tablas,
+-- la función y los tipos de la app si ya existían (no toca el esquema auth de
+-- Supabase, así que los usuarios creados en Authentication quedan intactos).
+drop table if exists
+  alerts, messages, symptoms, medication_logs,
+  medications, patients, users, institutions cascade;
+drop function if exists update_adherence_and_alert() cascade;
+drop type if exists
+  medication_status, alert_status, alert_priority, risk_level, user_role cascade;
+
 -- Tipos
 create type user_role as enum ('institution', 'patient');
 create type risk_level as enum ('low', 'medium', 'high');
