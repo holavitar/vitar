@@ -37,10 +37,9 @@ create policy "patients: institución ve los suyos"
       from users
       where id = auth.uid()
     )
-    or id in (
-      select id from patients
-      where name = (select name from users where id = auth.uid())
-    )
+    -- El paciente se ve a sí mismo: se compara el nombre directo contra su
+    -- usuario, SIN subconsultar patients (evita la recursión infinita de RLS).
+    or name = (select name from users where id = auth.uid())
   );
 
 drop policy if exists "patients: institución puede actualizar" on patients;

@@ -41,31 +41,10 @@ export function PatientSidebar() {
       {/* Logo */}
       <div className="px-5 py-5 border-b border-gray-100">
         <Link href="/portal">
-          <svg
-            height="24"
-            viewBox="0 0 440 148"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            aria-label="Vitar"
-          >
-            <path
-              fill="#e7ba61"
-              d="M98 64C98 73.7 94.2 83 87.4 89.8L58.8 118.4C51.7 125.5 42.3 129.1 32.8 129.1s-18.9-3.6-26-10.7C-.5 111.2-.5 100.2 6.7 92.9L35.3 64.3C42.4 57.2 51.8 53.6 61.3 53.6s18.9 3.6 26 10.7l.1.1C94.2 71 98 80.3 98 90Z"
-              transform="translate(21 9)"
-            />
-            <path
-              fill="#11325b"
-              d="M98 64C98 73.7 94.2 83 87.4 89.8L58.8 118.4C51.7 125.5 42.3 129.1 32.8 129.1s-18.9-3.6-26-10.7C-.5 111.2-.5 100.2 6.7 92.9L35.3 64.3C42.4 57.2 51.8 53.6 61.3 53.6s18.9 3.6 26 10.7l.1.1C94.2 71 98 80.3 98 90Z"
-              transform="translate(0 -9)"
-            />
-            <text
-              x="133" y="117"
-              fontFamily="Helvetica Now Display,Helvetica Neue,Helvetica,Arial,sans-serif"
-              fontWeight="700" fontSize="96" fill="#11325b" letterSpacing="-2"
-            >
-              vitar
-            </text>
-          </svg>
+          {/* Logo desde /public/logo.svg. El sidebar del paciente es blanco,
+              así que el logo va en sus colores reales (azul + dorado). */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logo.svg" alt="Vitar" className="h-6 w-auto" />
         </Link>
         <p
           className="text-gray-400 text-[10px] mt-1"
