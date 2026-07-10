@@ -181,6 +181,10 @@ create policy "patients: institución ve los suyos"
       from users
       where id = auth.uid()
     )
+    or id in (
+      select id from patients
+      where name = (select name from users where id = auth.uid())
+    )
   );
 
 create policy "patients: institución puede actualizar"
